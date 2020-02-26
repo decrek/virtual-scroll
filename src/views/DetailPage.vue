@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1>Detail page for {{ $route.params.id }}</h1>
-    <router-link to="/">Go back</router-link>
-  </div>
+  <main class="container">
+    <h2>Detail page for {{ $route.params.id }}</h2>
+    <button @click="$router.go(-1)">Go back</button>
+  </main>
 </template>
