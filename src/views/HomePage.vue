@@ -26,22 +26,33 @@
         height: 1024,
       }
     },
+    created() {
+      this.setHeight()
+      window.addEventListener('resize', this.onResize)
+    },
+    destroyed() {
+      window.removeEventListener('resize', this.onResize)
+    },
     methods: {
       getChildHeight(i) {
         return 100 + (i % 10)
+      },
+      onResize() {
+        this.setHeight()
+      },
+      setHeight() {
+        this.height = document.documentElement.clientHeight
       }
     }
   }
 </script>
 
 <style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+  h1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
   }
 
   li {
@@ -52,6 +63,7 @@
     width: 100%;
     height: 100px;
     background-color: cornsilk;
+    font-size: 1rem;
   }
 
 </style>
