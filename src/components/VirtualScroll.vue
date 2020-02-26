@@ -3,11 +3,11 @@
     <div
       class="viewport"
       :style="{
-    overflow: 'hidden',
-  willChange: 'transform',
-  height: totalHeight + 'px',
-  position: 'relative'
-  }"
+        overflow: 'hidden',
+        willChange: 'transform',
+        height: totalHeight + 'px',
+        position: 'relative'
+      }"
     >
       <div
         :style="{
@@ -15,7 +15,7 @@
           transform: `translateY(${offsetY}px)`
         }"
       >
-          <slot v-bind:visible-node-count="visibleNodeCount" v-bind:start-node="startNode"></slot>
+        <slot v-bind:visible-node-count="visibleNodeCount" v-bind:start-node="startNode"></slot>
       </div>
     </div>
   </div>
@@ -65,7 +65,6 @@
         return this.childPositions[this.startNode]
       },
       childPositions() {
-        console.log('aas')
         let results = [0]
         for (let i = 1; i < this.itemCount; i++) {
           results.push(results[i - 1] + this.getChildHeight(i - 1))
