@@ -1,21 +1,36 @@
 <template>
   <div id="app">
     <h1>Virtual scroll demo</h1>
-    <ul>
-      <li v-for="n in itemCount" :key="n">
-        <router-link :to="`/${n}`">item - {{ n}}</router-link>
-      </li>
-    </ul>
+    <virtual-scroll :itemCount="itemCount" :height="height" :get-child-height="getChildHeight">
+      <template v-slot:default="slotProps">
+        <ul>
+          <li v-for="n in slotProps.visibleNodeCount" :key="n + slotProps.startNode" :data-aapje="n + slotProps.startNode" ref="item">
+            <router-link :to="`/${n + slotProps.startNode}`">item - {{ n + slotProps.startNode }}</router-link>
+          </li>
+        </ul>
+      </template>
+    </virtual-scroll>
   </div>
 </template>
 
 <script>
+  import VirtualScroll from '@/components/VirtualScroll'
+
   export default {
+    components: {
+      VirtualScroll,
+    },
     data() {
       return {
         itemCount: 10000,
+        height: 1024,
       }
     },
+    methods: {
+      getChildHeight(i) {
+        return 100 + (i % 10)
+      }
+    }
   }
 </script>
 
