@@ -1,22 +1,17 @@
 <template>
-  <div :style="{ height: height + 'px', overflow: 'auto' }" ref="container">
+  <div
+    class="virtual-scroller"
+    :style="{ height: height + 'px', position: 'relative' }"
+    ref="container"
+    tabindex="-1"
+  >
     <div
-      class="viewport"
       :style="{
-        overflow: 'hidden',
-        willChange: 'transform',
-        height: totalHeight + 'px',
-        position: 'relative'
-      }"
-    >
-      <div
-        :style="{
           willChange: 'transform',
           transform: `translateY(${offsetY}px)`
         }"
-      >
-        <slot v-bind:visible-node-count="visibleNodeCount" v-bind:start-node="startNode"></slot>
-      </div>
+    >
+      <slot v-bind:visible-node-count="visibleNodeCount" v-bind:start-node="startNode"></slot>
     </div>
   </div>
 </template>
@@ -72,20 +67,39 @@
         return results
       }
     },
+    created() {
+      document.documentElement.style = '--documentHeight: ' + this.totalHeight + 'px;'
+    },
     mounted() {
-      this.scrollContainer = this.$refs.container
-      this.scrollContainer.addEventListener("scroll", this.onScroll)
+      window.addEventListener('scroll', this.onScroll)
     },
     destroyed() {
-      this.scrollContainer.removeEventListener("scroll", this.onScroll)
+      window.removeEventListener('scroll', this.onScroll)
+      document.documentElement.style = '--documentHeight: ' + 'auto;'
     },
     methods: {
-      onScroll(e) {
+      onScroll() {
         if (this.animationFrame) {
           cancelAnimationFrame(this.animationFrame)
         }
         this.animationFrame = requestAnimationFrame(() => {
-          this.scrollTop = e.target.scrollTop
+          this.scrollTop = window.scrollY
+
+          // fix focus, a little bit
+          if (document.activeElement && document.activeElement.tagName.toUpperCase() === 'A') {
+            const index = document.activeElement.getAttribute('data-index')
+            const newElement = document.querySelector(`[data-index="${index}"]`)
+            if (newElement) {
+              this.$nextTick(() => {
+                const oldScrollPositionX = window.scrollX
+                const oldScrollPositionY = window.scrollY
+                newElement.focus()
+                window.scrollTo(oldScrollPositionX, oldScrollPositionY)
+              })
+            } else {
+              // TODO: Wen the element was focused but is out of view. Oh yeah and please take into account if the user scrolls up or down. I have no clue what to do.
+            }
+          }
         })
       }
     }
@@ -133,3 +147,18 @@
     return endNode
   }
 </script>
+
+<style>
+  body {
+    will-change: transform;
+    height: var(--documentHeight);
+    position: relative;
+  }
+
+  .virtual-scroller {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+</style>
